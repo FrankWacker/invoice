@@ -185,21 +185,27 @@
   <#if item_index==1>
  <thead>
     <tr>
-  <th align="left" colspan="19">Fixed Charges</th>
+  <th align="left" colspan="20">Fixed Charges</th>
   </tr>
     <tr>
-     <th align="left" colspan="5">Description</th>
-    <th align="left" colspan="4">Charge &#40;AED/Day &#41;</th>
-    <th align="left" colspan="5">Days in Operation </th>
-    <th align="right" colspan="5">Total ${item.item} &#40;AED&#41;</th>
+     <th align="left" colspan="3">Description</th>
+    <th align="left" colspan="2">Charge</th>
+    <th align="left" colspan="3">Days in Operation</th>
+    <th align="right" colspan="3">Total &#40;AED&#41;</th>
+        <th align="right" colspan="3">Tax Rate</th>
+        <th align="right" colspan="3">Tax Amt</th>
+        <th align="right" colspan="3">Gross Amt</th>
     </tr>
    </thead></#if>
  <#if item.item == "Cooling Charges" || item.item == "Crane Charges">
   <tr>
-  	<td align="left" colspan="5" > ${item.description} </td>
-  	<td align="center" colspan="4">${item.rate}</td>
-  	<td align="center" colspan="5">${item.quantity}</td>
- 	<td align="right" colspan="5">${item.amount}</td>
+  	<td align="left" colspan="3" > ${item.description} </td>
+  	<td align="center" colspan="2">${item.rate}</td>
+  	<td align="center" colspan="3">${item.quantity}</td>
+ 	<td align="right" colspan="3">${item.amount}</td>
+    <td aligin="right" colspan="3">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ${item.taxrate1?j_string}</td>
+    <td aligin="right" colspan="3">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ${item.tax1amt?j_string}</td>
+    <td aligin="right" colspan="3">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;${item.grossamt?j_string}</td>
     </tr>
     </#if>
      </#list>
@@ -251,41 +257,57 @@
 
    <#if record.item?has_content>
 <table class="total" style="width: 100%; margin-top: 10px;">
-  <thead>
-  <tr>
-  	<th align="center" colspan="5">Billing period: ${record.startdate} - ${record.enddate} </th>
-  </tr>
-      
+<thead>
     <tr>
-    <th align="left">Description</th>
-      <th align="right">Slab Limit</th>
-      <th align="right">Consumption &#40;kWh&#41;</th>
-      <th align="right">Tariff &#40;AED/kWh&#41;</th>
-      <th align="right">Total &#40;AED&#41;</th>
+        <th align="center" colspan="8">Billing period: ${record.startdate} - ${record.enddate} </th>
     </tr>
-    </thead>
-   <tr>
-     <td align="left"> Consumption Price slab 1</td>
-     <#if record.custbody_ew_slab1to_hidden != 99999999>
-     <td align ="right">&#8804; ${record.custbody_ew_slab1to_hidden} kWh </td>
-     </#if>
-     <#if record.custbody_ew_slab1to_hidden == 99999999>
-     <td align ="right">&nbsp;</td>
-     </#if>
-     <td align ="right">${record.custbody_ew_inv_consumslab1}</td>
-     <td align="right"> ${record.custbody_ew_invpr_rate1} </td>
-     <td align="right"> ${record.custbody_ew_inv_ttlprice_s1}<#if record.custbody_ew_inv_ttlprice_s1?contains(".")><#else>.00</#if></td>
-  </tr>
-  <#if record.custbody_ew_inv_consumslab2?has_content>
+
     <tr>
-     <td align="left"> Consumption Price slab 2</td>
-      <td align ="right">&#x3e; ${record.custbody_ew_slab1to_hidden} kWh </td>
-     <td align ="right">${record.custbody_ew_inv_consumslab2}</td>
-     <td align="right"> ${record.custbody_ew_invpr_rate2}</td>
-     <td align="right"> ${record.custbody_ew_inv_ttlprice_s2}</td>
-  </tr>
-  </#if>
-  </table> 
+        <th align="left">Description</th>
+        <th align="right">Slab Limit</th>
+        <th align="right">Consumption &#40;kWh&#41;</th>
+        <th align="right">Tariff &#40;kWh&#41;</th>
+        <th align="right">Amount</th>
+        <th align="right">Tax Rate</th>
+        <th align="right">Tax Amt</th>
+        <th align="right">Gross Amt</th>
+
+
+    </tr>
+</thead>
+<tr>
+    <td align="left"> Consumption Price slab 1</td>
+    <#if record.custbody_ew_slab1to_hidden != 99999999>
+    <td align ="right">&#8804; ${record.custbody_ew_slab1to_hidden} kWh </td>
+</#if>
+<#if record.custbody_ew_slab1to_hidden == 99999999>
+<td align ="right">&nbsp;</td>
+</#if>
+<td align ="right">${record.custbody_ew_inv_consumslab1}</td>
+<td align="right"> ${record.custbody_ew_invpr_rate1} </td>
+<td align="right"> ${record.custbody_ew_inv_ttlprice_s1}</td>
+<td align="right">5%</td>
+<#assign vatamt = record.custbody_ew_inv_ttlprice_s1 * 0.05>
+<#assign grossamt = record.custbody_ew_inv_ttlprice_s1 * 1.05>
+
+<td align="right"> ${vatamt?string["0.##"]}</td>
+<td align="right"> ${grossamt?string["0.##"]}</td>
+        </tr>
+<#if record.custbody_ew_inv_consumslab2?has_content>
+<tr>
+<td align="left"> Consumption Price slab 2</td>
+<td align ="right">&#x3e; ${record.custbody_ew_slab1to_hidden} kWh </td>
+<td align ="right">${record.custbody_ew_inv_consumslab2}</td>
+<td align="right"> ${record.custbody_ew_invpr_rate2}</td>
+<td align="right"> ${record.custbody_ew_inv_ttlprice_s2}</td>
+<#assign vatamt2 = record.custbody_ew_inv_ttlprice_s2 * 0.05>
+<#assign grossamt2 = record.custbody_ew_inv_ttlprice_s2 * 1.05>
+
+<td align="right"> ${vatamt2?string["0.##"]}</td>
+<td align="right"> ${grossamt2?string["0.##"]}</td>
+</tr>
+        </#if>
+        </table>
      </#if>
   <hr />
  <table class="total" style="width: 100%; margin-top: 10px;">

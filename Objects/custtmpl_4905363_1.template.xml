@@ -201,18 +201,26 @@ font-family: sans-serif;
     <#if item_index==0>
     <thead>
         <tr>
-            <th colspan="10">${item.item@label}</th>
+            <th colspan="5">${item.item@label}</th>
             <th align="right" colspan="4">${item.quantity@label}</th>
-            <th align="left" colspan="5">${item.rate@label} AED</th>
-            <th align="right" colspan="5">${item.amount@label} AED</th>
+            <th align="left" colspan="2">${item.units_display@label}</th>
+            <th align="left" colspan="3">${item.rate@label} AED</th>
+            <th align="right" colspan="3">${item.amount@label} AED</th>
+            <th align="left" colspan="3">${item.taxrate1@label}</th>
+            <th align="right" colspan="2">${item.tax1amt@label}</th>
+            <th align="right" colspan="3">${item.grossamt@label}</th>
         </tr>
     </thead>
 </#if>
 <tr>
-    <td colspan="10"><span class="itemname">${item.item}</span><br />${item.description}</td>
+    <td colspan="5"><span class="itemname">${item.item}</span><br />${item.description}</td>
     <td align="right" colspan="4" line-height="150%">${item.quantity} ${item.units}</td>
-    <td align="left" colspan="5">${item.rate}</td>
-    <td align="right" colspan="5"> ${item.amount}</td>
+    <td align="left" colspan="2">${item.units_display}</td>
+    <td align="left" colspan="3">${item.rate}</td>
+    <td align="right" colspan="3"> ${item.amount}</td>
+    <td align="left" colspan="3">${item.taxrate1}</td>
+    <td align="right" colspan="2">${item.tax1amt}</td>
+    <td align="right" colspan="3">${item.grossamt}</td>
 </tr>
 </#list><!-- end items -->
         </table>

@@ -1,0 +1,406 @@
+<?xml version="1.0"?><!DOCTYPE pdf PUBLIC "-//big.faceless.org//report" "report-1.1.dtd">
+<pdf>
+<head>
+<#if .locale == "ru_RU">
+    <link name="verdana" type="font" subtype="opentype" src="${nsfont.verdana}" src-bold="${nsfont.verdana_bold}" bytes="2" />
+</#if>
+    <macrolist>
+        <macro id="nlheader">
+            <table class="header" style="width: 100%;"> 
+                <tr>
+    <td><span class="nameandaddress">${subsidiary.mainaddress_text}<br/>Email: ap@enerwhere.com</span><br /><span class="nameandaddress"><!--${companyInformation.addressText} --></span></td>
+    <td>&nbsp;</td>
+   <#if subsidiary.name == "Enerwhere Sustainable Energy Limited">
+     <td rowspan="1" align="center"><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=353&amp;c=4905363&amp;h=6d54431af3357325dc3c" style="float: left; margin: 0px; width:115px; height:60px" /> </td>
+    </#if>
+    <#if subsidiary.name == "Enerwhere Sustainable Energy DMCC"> 
+     <td rowspan="1" align="center"><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=353&amp;c=4905363&amp;h=6d54431af3357325dc3c" style="float: left; margin: 0px; width:115px; height:60px" /> </td>
+     </#if>
+    <#if subsidiary.name == "ESEME Energy LLC"> 
+     <td rowspan="1" align="center"><img src="https://4905363.app.netsuite.com/core/media/media.nl?id=356&amp;c=4905363&amp;h=945c354edf11a5b141b6" style="float: left; margin: 0px; width:115px; height:60px" /> </td>
+    </#if>
+    <#if subsidiary.name == "ESEME Energy L.L.C."> 
+     <td rowspan="1" align="center"><img src="https://4905363.app.netsuite.com/core/media/media.nl?id=356&amp;c=4905363&amp;h=945c354edf11a5b141b6" style="float: left; margin: 0px; width:115px; height:60px" /> </td>
+    </#if>
+    </tr>
+    <tr>
+      <td align="left">VAT # ${subsidiary.federalidnumber}</td>
+      <td colspan="2" align="right">Invoice No: ${record.tranid}</td>
+    </tr>
+     <tr>
+    <td colspan="3" align="right">Invoice Date: ${record.trandate}</td>
+    </tr>
+    <tr>
+    <td colspan="3" align="right">Due before: ${record.duedate}</td>
+    </tr>
+   <#if record.job?has_content>
+    <tr>
+    <td colspan="3" align="right">Project. No: ${record.job}</td>
+    </tr>
+   </#if>
+    <#if record.otherrefnum?has_content>
+    <tr>
+    <td colspan="3" align="right">Ref. PO No: ${record.otherrefnum}</td>
+    </tr>
+   </#if>
+     <tr>
+    <td colspan="3" align="right">Site: ${record.custbody_ew_inv_site}</td>
+    </tr>
+    <tr>
+    <td colspan="3" align="right">Payment terms: ${record.terms}</td>
+    </tr>
+ </table>
+        </macro>
+  
+        <macro id="nlfooter">
+        <table class="footer" style="width: 100%;">
+          <#if record.custbody_ew_inv_isnbf == true>
+      <tr>
+          <td align="left" colspan="5">Proceeds of the invoice is assigned to National Bank of Fujairah. Kindly issue a cheque in favor of National Bank of Fujairah c/o ${subsidiary.name}</td>
+     </tr>
+       </#if>
+         <tr>
+          <td colspan="5" align="left"><b>Bank transfer details:</b></td>
+          </tr>
+          <tr>
+          <td colspan="2">${record.custbody_ew_bankdetail_hidden}:</td>
+          <td colspan="2"><barcode codetype="code128" showtext="true" value="${record.tranid}"/></td>
+            <td align="right"><pagenumber/> of <totalpages/></td>
+          </tr>
+        </table>
+        </macro>
+    </macrolist>
+    <style type="text/css">table {
+        <#if .locale == "zh_CN">
+            font-family: stsong, sans-serif;
+        <#elseif .locale == "zh_TW">
+            font-family: msung, sans-serif;
+        <#elseif .locale == "ja_JP">
+            font-family: heiseimin, sans-serif;
+        <#elseif .locale == "ko_KR">
+            font-family: hygothic, sans-serif;
+        <#elseif .locale == "ru_RU">
+            font-family: verdana;
+        <#else>
+            font-family: sans-serif;
+        </#if>
+            font-size: 8pt;
+            table-layout: fixed;
+        }
+        th {
+            font-weight: bold;
+            font-size: 8pt;
+            vertical-align: middle;
+            padding: 5px 6px 3px;
+            background-color: #e3e3e3;
+            color: #333333;
+        }
+        td {
+            padding: 4px 6px;
+        }
+        b {
+            font-weight: bold;
+            color: #333333;
+        }
+        table.header td {
+            padding: 0px;
+            font-size: 8pt;
+        }
+        table.footer td {
+            padding-left: 5px;
+          	padding-bottom: 5px;
+            font-size: 7pt;
+        }
+        table.itemtable th {
+            padding-bottom: 10px;
+            padding-top: 10px;
+        }
+        table.body td {
+            padding-top: 2px;
+        }
+        table.total {
+            page-break-inside: avoid;
+        }
+        tr.totalrow {
+            background-color: #e3e3e3;
+            line-height: 200%;
+        }
+        td.totalboxtop {
+            font-size: 12pt;
+            background-color: #e3e3e3;
+        }
+        td.addressheader {
+            font-size: 8pt;
+            padding-top: 6px;
+            padding-bottom: 2px;
+        }
+        td.address {
+            padding-top: 0px;
+        }
+        td.totalboxmid {
+            font-size: 28pt;
+            padding-top: 20px;
+            background-color: #e3e3e3;
+        }
+        td.totalboxbot {
+            background-color: #e3e3e3;
+            font-weight: bold;
+        }
+        span.title {
+            font-size: 24pt;
+        }
+        span.number {
+            font-size: 16pt;
+        }
+        span.itemname {
+            font-weight: bold;
+            line-height: 150%;
+        }
+        hr {
+            width: 100%;
+            color: #d3d3d3;
+            background-color: #d3d3d3;
+            height: 1px;
+        }
+       
+</style>
+</head>
+<body header="nlheader" header-height="17%" footer="nlfooter" footer-height="65pt" padding="0.3in 0.5in 0.4in 0.5in" size="A4">
+<#assign hasKwh = false>
+    <table style="width: 100%; margin-top: 2px;">
+    <tr>
+    <td class="addressheader" colspan="3"><b>${record.billaddress@label}</b></td>
+    </tr>
+    <tr>
+    <td class="address" colspan="3">${record.billaddress}<br/>VAT # ${record.vatregnum}</td>
+      </tr>
+      <tr>
+    <td align="left"><span class="title">Tax ${record@title}</span></td>
+    </tr>  
+    </table>
+  <!-- Cooling -->
+
+ <#if record.item?has_content>
+    <table class="itemtable" style="width: 100%; margin-top: 5px;">
+       <#list record.item as item>
+  <#if item_index==0>
+ <thead>
+    <tr>
+  <th align="left" colspan="28">Fixed Charges for Billing period: ${record.startdate} - ${record.enddate}</th>
+  </tr>
+    <tr>
+     <th align="left" colspan="5">Description</th>
+        <th align="left" colspan="4">Charge&#40;AED/m<sup>2</sup>&#41;</th>
+    <th align="center" colspan="5">Installed m<sup>2</sup> </th>
+    <th align="right" colspan="5">Area Charge &#40;AED&#41;</th>
+    <th align="right" colspan="3">Tax Rate</th>
+    <th align="right" colspan="3">Tax Amt</th>
+    <th align="right" colspan="3">Gross Amt</th>
+
+    </tr>
+   </thead>
+    </#if>
+ <#if item.item == "Crane Charges" || item.item == "Area charge">
+  <tr>
+  	<td align="left" colspan="5" > ${item.description} </td>
+  	<td align="center" colspan="4">${item.rate}</td>
+  	<td align="center" colspan="5">${item.quantity}</td>
+ 	<td align="right" colspan="5">${item.amount}</td>
+      <td aligin="right" colspan="3">&nbsp; &nbsp; &nbsp; &nbsp;${item.taxrate1}</td>
+      <td aligin="right" colspan="3">&nbsp; &nbsp; &nbsp;&nbsp;${item.tax1amt}</td>
+      <td aligin="right" colspan="3">&nbsp;&nbsp;&nbsp;${item.grossamt}</td>
+    </tr>
+    </#if>
+     </#list>
+   </table>
+  </#if>
+
+<table class="itemtable" style="width: 100%; margin-top: 5px;"><!-- start items --><#list record.item as item><#if item_index==0>
+<#if item.item == "Electricity provided" || item.item == "Minimum Off-take">
+<#assign hasKwh = true>
+<thead>
+    <tr>
+        <th align="left" colspan="33">Meter readings</th>
+    </tr>
+    <tr>
+        <th align="left" colspan="5">Description</th>
+        <th align="left" colspan="4">${record.custbody_ew_inv_meterno_manual@label}</th>
+        <th align="left" colspan="5">Metername</th>
+        <th align="right" colspan="5">Last reading</th>
+        <th align="right" colspan="6">Current reading</th>
+        <th align="right" colspan="5">Consumption</th>
+        <th align="right" colspan="3">${item.units@label}</th>
+    </tr>
+</thead>
+</#if>
+        </#if>
+<#if item.item == "Electricity provided" || item.item == "Minimum Off-take">
+<tr>
+<td align="left" colspan="5" > ${item.description} </td>
+<td align="left" colspan="4">${item.custcol_ew_mtr_no_item}</td>
+<td align="left" colspan="5">${item.custcol_ew_inv_item_metername}</td>
+<td align="right" colspan="5">${item.custcol_ew_prv_rdg_item}</td>
+<td align="right" colspan="6">${item.custcol_ew_curr_rdg_item}</td>
+<td align="right" colspan="5" line-height="150%">${item.quantity}</td>
+<td align="right" colspan="3">${item.units}</td>
+</tr>
+        </#if>
+        </#list><!-- end items --></table>
+
+<hr />
+<#if hasKwh == true>
+<table class="total" style="width: 100%; margin-top: 10px;">
+
+<tr>
+    <!--<td colspan="1">&nbsp;</td> -->
+    <td colspan="5" align="right"> &nbsp; &nbsp; &nbsp;&nbsp; Subtotal:  ${record.custbody_ew_ttl_consump}&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; KWH</td>
+</tr>
+</table>
+
+<#if record.item?has_content>
+
+<table class="total" style="width: 100%; margin-top: 10px;">
+<thead>
+    <tr>
+        <th align="center" colspan="8">Billing period: ${record.startdate} - ${record.enddate} </th>
+    </tr>
+
+    <tr>
+        <th align="left">Description</th>
+        <th align="right">Slab Limit</th>
+        <th align="right">Consumption &#40;kWh&#41;</th>
+        <th align="right">Tariff &#40;AED/kWh&#41;</th>
+        <th align="right">Amt &#40;AED&#41;</th>
+        <th align="right">Tax Rate</th>
+        <th align="right">Tax Amt</th>
+        <th align="right">Gross Amt</th>
+
+
+    </tr>
+</thead>
+<tr>
+    <td align="left"> Consumption Price slab 1</td>
+    <#if record.custbody_ew_slab1to_hidden != 99999999>
+    <td align ="right">&#8804; ${record.custbody_ew_slab1to_hidden} kWh </td>
+</#if>
+<#if record.custbody_ew_slab1to_hidden == 99999999>
+<td align ="right">&nbsp;</td>
+</#if>
+<td align ="right">${record.custbody_ew_inv_consumslab1}</td>
+<td align="right"> ${record.custbody_ew_invpr_rate1} </td>
+<td align="right"> ${record.custbody_ew_inv_ttlprice_s1}</td>
+<td align="right">5%</td>
+<#assign vatamt = record.custbody_ew_inv_ttlprice_s1 * 0.05>
+<#assign grossamt = record.custbody_ew_inv_ttlprice_s1 * 1.05>
+
+<td align="right"> ${vatamt?string["0.##"]}</td>
+<td align="right"> ${grossamt?string["0.##"]}</td>
+        </tr>
+<#if record.custbody_ew_inv_consumslab2?has_content>
+<tr>
+<td align="left"> Consumption Price slab 2</td>
+<td align ="right">&#x3e; ${record.custbody_ew_slab1to_hidden} kWh </td>
+<td align ="right">${record.custbody_ew_inv_consumslab2}</td>
+<td align="right"> ${record.custbody_ew_invpr_rate2}</td>
+<td align="right"> ${record.custbody_ew_inv_ttlprice_s2}</td>
+<#assign vatamt2 = record.custbody_ew_inv_ttlprice_s2 * 0.05>
+<#assign grossamt2 = record.custbody_ew_inv_ttlprice_s2 * 1.05>
+
+<td align="right"> ${vatamt2?string["0.##"]}</td>
+<td align="right"> ${grossamt2?string["0.##"]}</td>
+</tr>
+        </#if>
+        </table>
+        </#if>
+
+<hr />
+</#if>
+<!-- last tabel right subtotal, VAT, Total -->
+ <table class="total" style="width: 100%; margin-top: 10px;">
+  <tr>
+  	<td align="right" colspan="8"> &nbsp; &nbsp;</td>
+    <td align="right" colspan="2"><b>${record.subtotal@label}</b></td>
+    <td align="right" colspan="2">AED ${record.subtotal}<#if record.subtotal?contains(".")><#else>.00</#if></td>
+    </tr>
+    <tr>
+      <td align="right" colspan="8">&nbsp;</td>
+    <td align="right" colspan="2"><b>VAT (5%)</b></td>
+    <td align="right" colspan="2">AED ${record.taxtotal}</td>
+    </tr>
+    <tr class="totalrow">
+    <td background-color="#ffffff">&nbsp;</td>
+    <td background-color="#ffffff">&nbsp;</td>  
+    <td colspan="6" background-color="#ffffff">&nbsp;</td>
+    <td align="right" colspan="2"><b>${record.total@label}</b></td>
+    <td align="right" colspan="2">AED ${record.total}
+      <!--<#if record.custbody_ew_inv_total_hidden?contains(".")><#else>.00</#if> -->
+</td>
+    </tr>
+  </table>
+  <#if record.custbody_ew_inv_custinfo?has_content>
+  <p> &nbsp;</p>
+ <table class="total" style="width: 100%; margin-top: 10px;">
+   <tr>
+   <td align="left"><b>Notes:</b></td>
+   </tr>
+    <tr>
+   <td align="left"> ${record.custbody_ew_inv_custinfo}</td>
+   </tr>
+   </table>
+  </#if>
+  
+    <#if record.memo?has_content>
+  <p> &nbsp;</p>
+   <table class="total" style="width: 100%; margin-top: 10px;">
+   <tr>
+   <td align="left"><b>Info:</b></td>
+   </tr>
+    <tr>
+   <td align="left"> ${record.memo}</td>
+   </tr>
+   </table>
+  </#if>
+  
+  
+  
+   <table class="total" style="width: 100%; margin-top: 10px;">
+   <tr><td>&nbsp;</td></tr>
+   <!--  <tr><td>&nbsp;</td></tr> -->
+     <tr><td>&nbsp;</td></tr>
+   <tr>
+   <td align="left"><b>issued by:</b></td>
+   <td>&nbsp;</td>
+   <td aligin="center"><b>approved by:</b></td>
+   </tr>
+    <tr>
+     <td  align="left"><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=361&amp;c=4905363&amp;h=8a53d62596dd9bf22943" style="float: left; margin: 0px; width:200px; height:90px" /> </td>
+     <!-- <td>&nbsp;</td> -->
+    <#if subsidiary.name == "Enerwhere Sustainable Energy Limited"> 
+     <td  align="right"><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=359&amp;c=4905363&amp;h=59dda9976bc7c89ae675" style="float: left; margin: 0px; width:150px; height:69px" /> </td>
+      <td><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=360&amp;c=4905363&amp;h=28708dc258d56be1053f" style="float: left; margin: 0px; width:250px; height:98px" />
+      </td>
+    </#if>
+    <#if subsidiary.name == "Enerwhere Sustainable Energy DMCC"> 
+     <td align="right"><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=358&amp;c=4905363&amp;h=88ebbdb13d6c4d886835" style="float: left; margin: 0px; width:115px; height:60px" /> </td>
+      <td><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=360&amp;c=4905363&amp;h=28708dc258d56be1053f" style="float: left; margin: 0px; width:250px; height:98px" />
+      </td>
+    </#if>
+     <#if subsidiary.name == "ESEME Energy LLC"> 
+     <td align="right"><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=357&amp;c=4905363&amp;h=9ad9fdcbd394067955e8" style="float: left; margin: 0px; width:115px; height:60px" /> </td>
+    <td> <img src="https://system.eu2.netsuite.com/core/media/media.nl?id=360&amp;c=4905363&amp;h=28708dc258d56be1053f" style="float: left; margin: 0px; width:250px; height:98px" />  
+       </td>
+    </#if>
+      <#if subsidiary.name == "ESEME Energy L.L.C."> 
+     <td align="right"><img src="https://system.eu2.netsuite.com/core/media/media.nl?id=357&amp;c=4905363&amp;h=9ad9fdcbd394067955e8" style="float: left; margin: 0px; width:115px; height:60px" /> </td>
+    <td> <img src="https://system.eu2.netsuite.com/core/media/media.nl?id=360&amp;c=4905363&amp;h=28708dc258d56be1053f" style="float: left; margin: 0px; width:250px; height:98px" />  
+       </td>
+    </#if>
+   <!-- <td>&nbsp;</td> -->
+   </tr>
+   <tr>
+          <td align="left" colspan="3">This is an electronically generated invoice with e-signature included.</td>
+     </tr>
+     
+   </table>
+</body>
+</pdf>

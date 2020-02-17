@@ -1,0 +1,7 @@
+<advancedpdftemplate scriptid="custtmpl_ew_crane_inv" standard="STDTMPLCUSTINVC">
+  <description></description>
+  <displaysourcecode>T</displaysourcecode>
+  <isinactive>F</isinactive>
+  <preferred>F</preferred>
+  <title>Enerwhere Crane Invoice</title>
+</advancedpdftemplate>

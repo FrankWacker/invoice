@@ -1,0 +1,7 @@
+<advancedpdftemplate scriptid="custtmpl_ew_inv_effi" standard="STDTMPLCUSTINVC">
+  <description></description>
+  <displaysourcecode>T</displaysourcecode>
+  <isinactive>F</isinactive>
+  <preferred>F</preferred>
+  <title>Enerwhere Efficency invoice</title>
+</advancedpdftemplate>

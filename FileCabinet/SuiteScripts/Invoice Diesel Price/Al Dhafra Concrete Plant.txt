@@ -1,0 +1,13 @@
+January 2019;1.91
+February 2019;1.85
+March 2019;1.96
+April 2019;1.96
+May 2019;2.05
+June 2019;1.96
+July 2019;1.96
+August 2019;1.90
+September 2019;1.87
+October 2019;1.85
+November 2019;1.91
+December 2019;1.83
+January 2020;1.83

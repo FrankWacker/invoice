@@ -1,0 +1,7 @@
+<advancedpdftemplate scriptid="custtmpl_ew_inv" standard="STDTMPLEMPTY">
+  <description>Invoice Template Enerwhere</description>
+  <displaysourcecode>T</displaysourcecode>
+  <isinactive>F</isinactive>
+  <preferred>F</preferred>
+  <title>Enerwhere Invoice PDF/HTML Template</title>
+</advancedpdftemplate>

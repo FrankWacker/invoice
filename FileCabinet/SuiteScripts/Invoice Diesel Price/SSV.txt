@@ -1,0 +1,13 @@
+January 2019;1.00
+February 2019;1.00
+March 2019;1.00
+April 2019;1.00
+May 2019;1.00
+June 2019;1.00
+July 2019;1.00
+August 2019;1.00
+September 2019;1.00
+October 2019;1.00
+November 2019;1.00
+December 2019;1.00
+January 2020;1.00

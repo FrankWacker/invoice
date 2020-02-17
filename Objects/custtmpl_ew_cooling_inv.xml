@@ -1,0 +1,7 @@
+<advancedpdftemplate scriptid="custtmpl_ew_cooling_inv" standard="STDTMPLCUSTINVC">
+  <description></description>
+  <displaysourcecode>T</displaysourcecode>
+  <isinactive>F</isinactive>
+  <preferred>F</preferred>
+  <title>Enerwhere Cooling Invoice</title>
+</advancedpdftemplate>

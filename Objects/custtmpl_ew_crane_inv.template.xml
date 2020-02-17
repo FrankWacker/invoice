@@ -250,6 +250,7 @@
 <table class="total" style="width: 100%; margin-top: 10px;">
 
   <tr>
+
   	<!--<td colspan="1">&nbsp;</td> -->
   	<td colspan="5" align="right"> &nbsp; &nbsp; &nbsp;&nbsp; Subtotal:  ${record.custbody_ew_ttl_consump}&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; KWH</td>
     </tr>

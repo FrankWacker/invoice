@@ -204,8 +204,8 @@ font-family: sans-serif;
             <th colspan="5">${item.item@label}</th>
             <th align="right" colspan="4">${item.quantity@label}</th>
             <th align="left" colspan="2">${item.units_display@label}</th>
-            <th align="left" colspan="3">${item.rate@label} AED</th>
-            <th align="right" colspan="3">${item.amount@label} AED</th>
+            <th align="left" colspan="3">${item.rate@label}</th>
+            <th align="right" colspan="3">${item.amount@label}</th>
             <th align="left" colspan="3">${item.taxrate1@label}</th>
             <th align="right" colspan="2">${item.tax1amt@label}</th>
             <th align="right" colspan="3">${item.grossamt@label}</th>
@@ -218,8 +218,8 @@ font-family: sans-serif;
     <td align="left" colspan="2">${item.units_display}</td>
     <td align="left" colspan="3">${item.rate}</td>
     <td align="right" colspan="3"> ${item.amount}</td>
-    <td align="left" colspan="3">${item.taxrate1}</td>
-    <td align="right" colspan="2">${item.tax1amt}</td>
+    <td align="left" colspan="2">${item.taxrate1}</td>
+    <td align="right" colspan="3">${item.tax1amt}</td>
     <td align="right" colspan="3">${item.grossamt}</td>
 </tr>
 </#list><!-- end items -->
@@ -230,17 +230,17 @@ font-family: sans-serif;
 <table class="total" style="width: 100%; margin-top: 10px;">
 <tr>
     <td colspan="4">&nbsp;</td>
-    <td align="right"><b>${record.subtotal@label} AED</b></td>
+    <td align="right"><b>${record.subtotal@label} ${subsidiary.currency}</b></td>
     <td align="right">${record.subtotal}</td>
 </tr>
 <tr>
     <td colspan="4">&nbsp;</td>
-    <td align="right"><b>${record.taxtotal@label} 5% AED</b></td>
+    <td align="right"><b>${record.taxtotal@label} 5% ${subsidiary.currency}</b></td>
     <td align="right">${record.taxtotal}</td>
 </tr>
 <tr class="totalrow">
     <td background-color="#ffffff" colspan="4">&nbsp;</td>
-    <td align="right"><b>${record.total@label} AED</b></td>
+    <td align="right"><b>${record.total@label} ${subsidiary.currency}</b></td>
     <td align="right">${record.total}</td>
 </tr></table>
 

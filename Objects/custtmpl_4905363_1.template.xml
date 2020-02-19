@@ -226,7 +226,7 @@ font-family: sans-serif;
         </table>
 
 <hr />
-        </#if>
+    </#if>
 <table class="total" style="width: 100%; margin-top: 10px;">
 <tr>
     <td colspan="4">&nbsp;</td>

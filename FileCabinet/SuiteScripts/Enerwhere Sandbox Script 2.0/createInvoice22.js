@@ -41,7 +41,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				fieldId: 'custrecord_ew_site_flag_createinvoice'
 			});
 			if(create == false){
-				return false;
+				return true;
 			}
 			var site_name = myrecord.getValue({
 				fieldId: 'name'
@@ -311,7 +311,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
                         itemname = '3775';
 						objInvoice.setCurrentSublistValue('item', 'item', itemname);
 						objInvoice.setCurrentSublistValue('item', 'custcol_ew_item_filter', itemname);
-                        var workingdays = getCraneDetail(startReading[m].getValue('custrecordmeternumber '));
+                        var workingdays = getCraneDetail(ar_mtrdata[m][0],fromDate,todate);
 						objInvoice.setCurrentSublistValue('item', 'quantity', workingdays.toString());
 				//		objInvoice.setCurrentSublistValue('item', 'units', '15');
 						var rate = getCraneRate(myrecord, objInvoice,m);
@@ -319,7 +319,8 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 						objInvoice.setCurrentSublistValue('item', 'rate', rate);
 						objInvoice.setCurrentSublistValue('item', 'taxcode', '8');
 						var amnt = rate * workingdays;
-						objInvoice.setCurrentSublistValue('item', 'amount', amnt.toString());
+						amnt = amnt.toFixed(2);
+						objInvoice.setCurrentSublistValue('item', 'amount', amnt);
 						objInvoice.setCurrentSublistValue('item', 'custcol_ew_mtr_no_item', ar_mtrdata[m][0].toString()); // meternumber
 					}
 
@@ -536,12 +537,46 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 			objInvoice.commitLine({sublistId: 'item'});
 		} // EOF validateLine
 
-		function getCraneDetail(mtrnumber){
+		function getCraneDetail(mtrnumber,fromDate,todate){
 			var workingdays = 0;
-			var wdSearch = search.load({
-				id: 'customsearch_ew_crane_usedmonthly_2',
-				filter: mtrnumber
+			var f_fromdate = format.format({
+				value: fromDate,
+				type: format.Type.DATE
 			});
+			var f_todate = format.format({
+				value: todate,
+				type: format.Type.DATE
+			});
+			var wdSearch =  search.create({
+				type: "customrecord_ew_meterreading_form",
+				filters:
+					[
+						["custrecord1","within",f_fromdate,f_todate],
+						"AND",
+						["custrecordmeternumber","is",mtrnumber],
+						"AND",
+						["custrecord_ew_meterreading_inv_flag","is","T"]
+					],
+				columns:
+					[
+						"name",
+						"custrecordmetername",
+						search.createColumn({
+							name: "custrecordmeternumber",
+							sort: search.Sort.ASC
+						}),
+						"custrecord_ew_mr_site",
+						"custrecord_ew_mr_cust_new",
+						search.createColumn({
+							name: "custrecord1",
+							sort: search.Sort.ASC
+						}),
+						"custrecord_ew_meterreading_value",
+						"custrecord_ew_meterreading_inv_flag"
+					]
+			});
+			var searchResultCount = wdSearch.runPaged().count;
+
 			wdSearch.run().each(function(result){
 				workingdays++;
 				return true;

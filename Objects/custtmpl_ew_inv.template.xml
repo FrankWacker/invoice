@@ -211,6 +211,11 @@ font-family: sans-serif;
 </#list><!-- end items --></table>
 
 <hr /></#if>
+<#if subsidiary.name == "Enerwhere Sustainable Energy Nigeria Limited">
+<#assign taxrate = 7.5>
+<#elseif subsidiary.name != "Enerwhere Sustainable Energy Nigeria Limited">
+<#assign taxrate = 5>
+		</#if>
 <table class="total" style="width: 100%; margin-top: 10px;"><tr><!--<td colspan="1">&nbsp;</td> -->
 	<td align="right" colspan="5">&nbsp; &nbsp; &nbsp;&nbsp; Subtotal: ${record.custbody_ew_ttl_consump}&nbsp;&nbsp; &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; KWH</td>
 </tr></table>
@@ -241,9 +246,11 @@ font-family: sans-serif;
 <td align="right">${record.custbody_ew_inv_consumslab1}</td>
 <td align="right">${record.custbody_ew_invpr_rate1}</td>
 <td align="right">${record.custbody_ew_inv_ttlprice_s1}</td>
-<td align="right">5%</td>
-<#assign vatamt = record.custbody_ew_inv_ttlprice_s1 * 0.05>
-<#assign grossamt = record.custbody_ew_inv_ttlprice_s1 * 1.05>
+<td align="right">${taxrate}</td>
+
+<#assign vatamt = record.custbody_ew_inv_ttlprice_s1 * (taxrate / 100)>
+<#assign grossamt = record.custbody_ew_inv_ttlprice_s1 + vatamt>
+
 
 <td align="right"> ${vatamt?string["0.##"]}</td>
 <td align="right"> ${grossamt?string["0.##"]}</td>
@@ -255,8 +262,9 @@ font-family: sans-serif;
 <td align="right">${record.custbody_ew_inv_consumslab2}</td>
 <td align="right">${record.custbody_ew_invpr_rate2}</td>
 <td align="right">${record.custbody_ew_inv_ttlprice_s2}</td>
-<#assign vatamt2 = record.custbody_ew_inv_ttlprice_s2 * 0.05>
-<#assign grossamt2 = record.custbody_ew_inv_ttlprice_s2 * 1.05>
+<td align="right">${taxrate}</td>
+<#assign vatamt2 = record.custbody_ew_inv_ttlprice_s2 * (taxrate / 100)>
+<#assign grossamt2 = record.custbody_ew_inv_ttlprice_s2 + vatamt>
 
 <td align="right"> ${vatamt2?string["0.##"]}</td>
 <td align="right"> ${grossamt2?string["0.##"]}</td>
@@ -272,15 +280,15 @@ font-family: sans-serif;
 		</tr>
 <tr>
 <td align="right" colspan="8">&nbsp;</td>
-<td align="right" colspan="2"><b>VAT (5%)</b></td>
-<td align="right" colspan="2"><#if subsidiary.name != "Enerwhere Sustainable Energy Nigeria Limited">AED </#if> ${record.custbody_ew_inv_vat_hidden}</td>
+<td align="right" colspan="2"><b>VAT <#if subsidiary.name != "Enerwhere Sustainable Energy Nigeria Limited">(5%)</#if></b></td>
+<td align="right" colspan="2"><#if subsidiary.name != "Enerwhere Sustainable Energy Nigeria Limited">AED </#if> ${vatamt?string["0.##"]}</td>
 		</tr>
 <tr class="totalrow">
 <td background-color="#ffffff">&nbsp;</td>
 <td background-color="#ffffff">&nbsp;</td>
 <td background-color="#ffffff" colspan="6">&nbsp;</td>
 <td align="right" colspan="2"><b>${record.total@label}</b></td>
-<td align="right" colspan="2"><#if subsidiary.name != "Enerwhere Sustainable Energy Nigeria Limited">AED</#if> ${record.custbody_ew_inv_total_hidden}<#if record.total?contains(".")><#else>.00</#if></td>
+<td align="right" colspan="2"><#if subsidiary.name != "Enerwhere Sustainable Energy Nigeria Limited">AED</#if> ${grossamt?string["0.##"]}<#if record.total?contains(".")><#else>.00</#if></td>
 		</tr></table>
 <#if record.memo?has_content>
 

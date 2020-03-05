@@ -324,6 +324,9 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
                         }
 
                         var tmp;
+                        // var lv_quantity = (invoiceRecord.getSublistValue('item','custcol_ew_curr_rdg_item',i) - invoiceRecord.getSublistValue('item','custcol_ew_prv_rdg_item',i));
+                        // invoiceRecord.setSublistValue({sublistId: 'item', fieldId: 'quantity', line: i, value: lv_quantity});
+                        // invoiceRecord.setSublistValue({sublistId: 'item', fieldId: 'rate', line: i, value: rate});
 
                         tmp = invoiceRecord.getSublistValue('item', 'quantity', i);
                         consumption_sum2 = parseFloat(consumption_sum2) + parseFloat(tmp);
@@ -339,7 +342,7 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
 
                             invoiceRecord.setValue("custbody_ew_minofftakeauto", false);
                         }
-                    }
+                    } // end for loop each line item
 
                     if(consumption_sum2 > slab1to) {
                         if(discount != null) {

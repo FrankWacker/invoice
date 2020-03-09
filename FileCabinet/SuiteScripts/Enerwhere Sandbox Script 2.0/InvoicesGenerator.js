@@ -611,7 +611,7 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
                     vat = parseFloat(vat.toFixed(2));
                     total = parseFloat(subtotal) + parseFloat(vat);
 
-                    
+
                     invoiceRecord.setValue('custbody_ew_inv_subtotal_hidden', subtotal);
                     invoiceRecord.setValue('custbody_ew_inv_vat_hidden', vat);
                     invoiceRecord.setValue('custbody_ew_inv_total_hidden', total.toFixed(2));
@@ -620,14 +620,14 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
                         invoiceRecord.setValue('custbody_ew_inv_ttlprice_s1', parseFloat(consumption_sum) * parseFloat(rate));
                     }
 
-                        invoiceRecord.setValue('custbody_ew_invpr_rate1', rate);
-                        if (offtake == false) {
-                            invoiceRecord.setValue('custbody_ew_ttl_consump', consumption_sum);
-                        }
-                        invoiceRecord.setValue('custbody_ew_invpr_rate1', rate);
-                        invoiceRecord.setValue('custbody_ew_minofftakeauto', false);
+                    invoiceRecord.setValue('custbody_ew_invpr_rate1', rate);
+                    if (offtake == false) {
+                        invoiceRecord.setValue('custbody_ew_ttl_consump', consumption_sum);
+                    }
+                    invoiceRecord.setValue('custbody_ew_invpr_rate1', rate);
+                    invoiceRecord.setValue('custbody_ew_minofftakeauto', false);
 
-                   // }
+                    // }
                 }
             }
             catch(error){

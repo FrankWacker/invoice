@@ -65,10 +65,10 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
         var sublistName = scriptContext.sublistId;
         if(sublistName != 'item') return true;
         var field = scriptContext.fieldId;
-        if (field === 'item'){
+      //  if (field === 'item'){
             if (currentRecord.getCurrentSublistValue({
                 sublistId: sublistName,
-                fieldId: field
+                fieldId: 'item'
             }) === '417'){
                 var custform = currentRecord.getValue('customform');
                 if (custform == 109 || custform == 118|| custform == 120) {
@@ -77,9 +77,13 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
                     var l_enddate = currentRecord.getValue('enddate');
                     var l_site = currentRecord.getValue('custbody_ew_inv_site');
 
-                    var rs_site = record.load('customrecord_ew_site_form', l_site);
+                //    var rs_site = record.load('customrecord_ew_site_form', l_site[0]);
+                    var rs_site = record.load({
+                        type: 'customrecord_ew_site_form',
+                        id: l_site[0]
+                    });
                     const fileName = rs_site.getValue("name");
-                    var fixedRate = rs_site.getFieldValue('custrecord_ew_site_fxdrate');
+                    var fixedRate = rs_site.getValue('custrecord_ew_site_fxdrate');
                     var fixeddieselprice = rs_site.getValue('custrecord_ew_site_fixeddieselp');
                     var equirate = rs_site.getValue('custrecord_ew_site_equirate');
                     var discount = rs_site.getValue('custrecord_ew_site_discountamnt');
@@ -153,28 +157,33 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
                         l_rate = l_rate.toFixed(3); // toFixed returns a string so parseFloat again
                         l_rate = parseFloat(l_rate);
                     }   // endif consumption
-                    currentRecord.setSublistValue('item', 'rate','l_rate');
-                    currentRecord.setCurrentSublistValue('item', 'quantity', ttl_consumption);
+                    debugger;
+                    currentRecord.setCurrentSublistValue('item', 'rate',l_rate,true);
+                    currentRecord.setCurrentSublistValue('item', 'quantity', ttl_consumption,true);
 
                     var taxcode = currentRecord.getCurrentSublistValue('item', 'taxcode');// AE-S 5% VAT
-                    currentRecord.setCurrentSublistValue('item','taxcode', taxcode);
-                } //  endif custform
+                    currentRecord.setCurrentSublistValue('item','taxcode', taxcode,true);
+                    currentRecord.commitLine({
+                        sublistId: 'item'
+                    });                } //  endif custform
 
             } // endif Item is 417 electricity provided
-        } // endif field is item
+      //  } // endif field is item
         }
         function findDieselPrice(l_startdate, l_enddate) {
+            debugger;
             var myQuery = query.create({
                 type: 'customrecord_ew_official_diesel_price'
             });
             var firstCondition = myQuery.createCondition({
                 fieldId: 'custrecord_ew_diesel_from',
-                operator: query.Operator.ONORBEFORE,
+                operator: query.Operator.ON_OR_BEFORE
+                ,
                 values: l_startdate
         });
             var secondCondition = myQuery.createCondition({
                 fieldId: 'custrecord_ew_diesel_to',
-                operator: query.Operator.ONORAFTER,
+                operator: query.Operator.ON_OR_AFTER,
                 values: l_enddate
             });
             myQuery.condition = myQuery.and(firstCondition,secondCondition);
@@ -206,7 +215,7 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
             });
             var secondCondition = myQuery.createCondition({
                 fieldId: 'custrecord_ew_fixeddiesel_site',
-                operator: query.Operator.ANYOF,
+                operator: query.Operator.ANY_OF,
                 values: fileName
             });
             myQuery.condition = myQuery.and(firstCondition,secondCondition);

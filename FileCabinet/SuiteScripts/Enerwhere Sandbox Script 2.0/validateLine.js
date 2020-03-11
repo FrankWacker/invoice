@@ -59,25 +59,23 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
          * @since 2015.2
          */
         function validateLine(scriptContext) {
-       // var line = scriptContext.line;
-        var currentRecord = scriptContext.currentRecord;
-        debugger;
-        var sublistName = scriptContext.sublistId;
-        if(sublistName != 'item') return true;
-        var field = scriptContext.fieldId;
-      //  if (field === 'item'){
+            // var line = scriptContext.line;
+            var currentRecord = scriptContext.currentRecord;
+            var sublistName = scriptContext.sublistId;
+            if(sublistName != 'item') return true;
+            var field = scriptContext.fieldId;
+            //  if (field === 'item'){
             if (currentRecord.getCurrentSublistValue({
                 sublistId: sublistName,
                 fieldId: 'item'
             }) === '417'){
                 var custform = currentRecord.getValue('customform');
                 if (custform == 109 || custform == 118|| custform == 120) {
-                    debugger;
                     var l_startdate = currentRecord.getValue('startdate');
                     var l_enddate = currentRecord.getValue('enddate');
                     var l_site = currentRecord.getValue('custbody_ew_inv_site');
 
-                //    var rs_site = record.load('customrecord_ew_site_form', l_site[0]);
+                    //    var rs_site = record.load('customrecord_ew_site_form', l_site[0]);
                     var rs_site = record.load({
                         type: 'customrecord_ew_site_form',
                         id: l_site[0]
@@ -106,17 +104,9 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
 
 
                     if(fixedRate == false){
-                        //	debugger;
-                        var h_startdate = new Date(l_startdate);
-                        for (var d = 0; searchdiesel != null && d < searchdiesel.length; d++) {
-                            var searchresult = searchdiesel[d];
-                            var h_from = nlapiStringToDate(searchresult.getValue('custrecord_ew_diesel_from'));
-                            var h_to = nlapiStringToDate(searchresult.getValue('custrecord_ew_diesel_to'));
-                            if(h_startdate >=  h_from && h_startdate < h_to){
-                                fixeddieselprice = searchresult.getValue('custrecord_ew_diesel_price');
-                                break;
-                            }
-                        }
+                        debugger;
+                       var fixeddieselprice = searchdiesel[0];
+
                         fixeddieselprice = (fixeddieselprice * 100)/105; // Net Official Diesel price
                         fixeddieselprice = fixeddieselprice.toFixed(2);
                         fixeddieselprice = parseFloat(fixeddieselprice);
@@ -158,33 +148,55 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
                         l_rate = parseFloat(l_rate);
                     }   // endif consumption
                     debugger;
-                    currentRecord.setCurrentSublistValue('item', 'rate',l_rate,true);
-                    currentRecord.setCurrentSublistValue('item', 'quantity', ttl_consumption,true);
+                    currentRecord.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'rate',
+                        value: l_rate,
+                        ignoreFieldChange: true
+                    });
+                    currentRecord.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'quantity',
+                        value: ttl_consumption,
+                        ignoreFieldChange: true
+                    });
 
                     var taxcode = currentRecord.getCurrentSublistValue('item', 'taxcode');// AE-S 5% VAT
-                    currentRecord.setCurrentSublistValue('item','taxcode', taxcode,true);
-                    currentRecord.commitLine({
-                        sublistId: 'item'
-                    });                } //  endif custform
+                    currentRecord.setCurrentSublistValue({
+                        sublistId: 'item',
+                        fieldId: 'taxcode',
+                        value: taxcode,
+                        ignoreFieldChange: true
+                    });
+
+                } //  endif custform
 
             } // endif Item is 417 electricity provided
-      //  } // endif field is item
+            //  } // endif field is item
+            return true;
         }
         function findDieselPrice(l_startdate, l_enddate) {
             debugger;
+            var h_from = format.format({
+                value: l_startdate,
+                type: format.Type.DATE
+            });
+            var h_to = format.format({
+                value: l_enddate,
+                type: format.Type.DATE
+            });
             var myQuery = query.create({
                 type: 'customrecord_ew_official_diesel_price'
             });
             var firstCondition = myQuery.createCondition({
                 fieldId: 'custrecord_ew_diesel_from',
-                operator: query.Operator.ON_OR_BEFORE
-                ,
-                values: l_startdate
-        });
+                operator: query.Operator.ON_OR_BEFORE,
+                values: h_from
+            });
             var secondCondition = myQuery.createCondition({
                 fieldId: 'custrecord_ew_diesel_to',
                 operator: query.Operator.ON_OR_AFTER,
-                values: l_enddate
+                values: h_to
             });
             myQuery.condition = myQuery.and(firstCondition,secondCondition);
 
@@ -196,7 +208,7 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
             var resultSet = myQuery.run();
             var rs = resultSet.results;
 
-            return rs;
+            return rs[0].values;
 
         } //eof findDieselPrice
 

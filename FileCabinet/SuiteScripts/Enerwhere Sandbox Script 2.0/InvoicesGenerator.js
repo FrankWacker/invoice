@@ -3,14 +3,17 @@
  * @NScriptType UserEventScript
  * @NModuleScope SameAccount
  */
-define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/search', 'N/file'],
+define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/search', 'N/file', 'N/query'],
     /**
      * @param {record} record
      * @param {runtime} runtime
      * @param {dialog} dialog
      * @param {message} message
+     * @param (error) error
+     * @param (search) search
+     * @param (file) file
      */
-    function(record, runtime, dialog, message, error, search, file) {
+    function(record, runtime, dialog, message, error, search, file, query) {
 
         function getFixedDieselPrice(fileName, startDate) {
             //##### Search for file #####

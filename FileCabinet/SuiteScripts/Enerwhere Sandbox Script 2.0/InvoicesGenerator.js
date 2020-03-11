@@ -12,6 +12,7 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
      * @param (error) error
      * @param (search) search
      * @param (file) file
+     * @param (query) query
      */
     function(record, runtime, dialog, message, error, search, file, query) {
 
@@ -61,7 +62,11 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
                 }
 
                 const custform = invoiceRecord.getValue("customform");
-
+                // Special handling for sites like DUT
+                if(custform == 139){
+                    // TODO: call script for DUT
+                    return true;
+                }
                 if (custform != 109 && custform != 118 && custform != 120 && custform != 125) {
                     return true;
                 }

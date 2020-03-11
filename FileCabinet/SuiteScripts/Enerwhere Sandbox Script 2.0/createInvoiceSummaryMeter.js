@@ -25,7 +25,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 		 * @Since 2015.2
 		 */
 
-		// global function and variables
+			// global function and variables
 
 		var dateOffset = (12*60*60*1000); //1 days UTC + 4
 		var todate = new Date();
@@ -47,8 +47,8 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				fieldId: 'custrecord_ew_site_invtmpl'
 			}); // KWH Invoice template
 			// Soecial script for Sites that have Summary Meters e.g. DUT
-			if(custform == '139'){
-				//TODO: call the script for DUT Invoice
+			if(custform != '139'){
+				//Do nothing
 				return true;
 			}
 			var site_name = myrecord.getValue({
@@ -59,19 +59,19 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 			var fromdate = myrecord.getValue({
 				fieldId: 'custrecord_ew_site_lastinvdate'
 			});
-				fromdate = format.parse({
-					value: fromdate,
-					type: format.Type.DATE
-				});
+			fromdate = format.parse({
+				value: fromdate,
+				type: format.Type.DATE
+			});
 
-            var startReadings = getReadings(site, fromdate);
+			var startReadings = getReadings(site, fromdate);
 			var endReadings = getReadings(site, todate);
 			// check the readings
 			var chkReading = compareReading(startReadings,endReadings,site_name);
 			if (chkReading == false){
 				// TODO: Error handling global
 			}
-            fromdate.setDate(fromdate.getDate() + 1);
+			fromdate.setDate(fromdate.getDate() + 1);
 			createInvoice(myrecord, startReadings, endReadings);
 			// check if we need a seperate invoice for cables that we rent monthly
 			var ServiceInv = getServiceFlag(myrecord);
@@ -171,7 +171,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					for (var l = k; l < endReading.length; l++) {
 						ar_mtrdata[k][1] = endReading[l].getValue('custrecord_ew_meterreading_value'); // current reading
 						ar_mtrdata[k][3] = mtrdtls.getValue('displayname'); // Metername
-                        ar_mtrdata[k][4] = mtrdtls.getText('custitem_ew_inventory_type');
+						ar_mtrdata[k][4] = mtrdtls.getText('custitem_ew_inventory_type');
 						if (ar_mtrdata[k][3] == '') {
 							var h_meterno = k + 1;
 							ar_mtrdata[k][3] = 'Revenue Meter ' + h_meterno;
@@ -190,18 +190,18 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					ar_mtrdata[0][4] = '';
 					ar_mtrdata.push();
 				}
-                if (custform == '120') {
-                    // check for crane meters
-                    var craneNo = 1;
-                    for (var mc = 0; mc < ar_mtrdata.length; mc++) {
+				if (custform == '120') {
+					// check for crane meters
+					var craneNo = 1;
+					for (var mc = 0; mc < ar_mtrdata.length; mc++) {
 
-                        // check if the item is a subitem to get the correct serial number
-                        if (ar_mtrdata[mc][4] == 'Crane Meter') {
-                            ar_mtrdata[mc][3] = 'Crane Meter' + craneNo;
-                            craneNo ++;
-                        }
-                    } // end of loop  caren meters
-                }
+						// check if the item is a subitem to get the correct serial number
+						if (ar_mtrdata[mc][4] == 'Crane Meter') {
+							ar_mtrdata[mc][3] = 'Crane Meter' + craneNo;
+							craneNo ++;
+						}
+					} // end of loop  caren meters
+				}
 				// get Customer details to find the right subsidiary
 				var CustRecord = record.load({
 					type: record.Type.CUSTOMER,
@@ -273,18 +273,18 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					fieldId: 'trandate',
 					value: todate
 				})
-                var lv_duedate = new Date();
+				var lv_duedate = new Date();
 				lv_duedate.setDate(todate.getDate() + 30);
-                var custduedate = new Date();
+				var custduedate = new Date();
 				custduedate.setDate(todate.getDate() + 32);
-                objInvoice.setValue({
-                    fieldId: 'custbody_ew_bill_estpayment',
-                    value: lv_duedate
-                });
-                objInvoice.setValue({
-                    fieldId: 'custbody_ew_inv_custduedate',
-                    value: custduedate
-                });
+				objInvoice.setValue({
+					fieldId: 'custbody_ew_bill_estpayment',
+					value: lv_duedate
+				});
+				objInvoice.setValue({
+					fieldId: 'custbody_ew_inv_custduedate',
+					value: custduedate
+				});
 				// sort the Meter by Metername
 				ar_mtrdata.sort(function (a, b) {
 					var valueA = a[3].toLowerCase(), valueB = b[3].toLowerCase();
@@ -307,7 +307,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					});
 				} // endif sort for cranes
 
-                // loop for line items
+				// loop for line items
 				for (var m = 0; m < ar_mtrdata.length; m++) {
 					if(custform == '125' && ar_mtrdata[m][4] != 'Revenue Meter'){
 						continue;
@@ -315,13 +315,13 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					itemname = '417';
 					// if the meter is a cranemeter, the number of working days must be checked
 
-                    if (ar_mtrdata[m][4] == 'Crane Meter') {
-                        itemname = '3775';
+					if (ar_mtrdata[m][4] == 'Crane Meter') {
+						itemname = '3775';
 						objInvoice.setCurrentSublistValue('item', 'item', itemname);
 						objInvoice.setCurrentSublistValue('item', 'custcol_ew_item_filter', itemname);
-                        var workingdays = getCraneDetail(ar_mtrdata[m][0],fromDate,todate);
+						var workingdays = getCraneDetail(ar_mtrdata[m][0],fromDate,todate);
 						objInvoice.setCurrentSublistValue('item', 'quantity', workingdays.toString());
-				//		objInvoice.setCurrentSublistValue('item', 'units', '15');
+						//		objInvoice.setCurrentSublistValue('item', 'units', '15');
 						var rate = getCraneRate(myrecord, objInvoice,m);
 						rate = parseFloat(rate);
 						objInvoice.setCurrentSublistValue('item', 'rate', rate);
@@ -348,10 +348,10 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 
 					objInvoice.commitLine('item');
 					//validate the new line
-						validateLine(objInvoice, myrecord, m);
-					} // end of loop array meter details
+					validateLine(objInvoice, myrecord, m);
+				} // end of loop array meter details
 
-                // cooling Invoice form
+				// cooling Invoice form
 				if (custform == '118') {
 					var lineNumJG = objInvoice.selectNewLine({
 						sublistId: 'item'
@@ -451,7 +451,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				});
 				return false;
 			}
-            var objRecord = record.load({
+			var objRecord = record.load({
 				type: record.Type.SERIALIZED_INVENTORY_ITEM,
 				id: result[0].id
 			});
@@ -469,10 +469,10 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				return;
 			}
 			// Invoice automation per Line Item
-			 var lineNum = objInvoice.selectLine({
-			 	sublistId: 'item',
-			 	line: m
-			 });
+			var lineNum = objInvoice.selectLine({
+				sublistId: 'item',
+				line: m
+			});
 			var custform = objInvoice.getValue({
 				fieldId: 'customform'
 			});
@@ -611,12 +611,12 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 		function efficencyInvoice(myrecord,objInvoice){
 			var myrecord = myrecord;
 			var objInvoice = objInvoice;
-		    //  Area charge = fixed charge + (Dieselprice * Usage charge)
+			//  Area charge = fixed charge + (Dieselprice * Usage charge)
 			var fixedchrg = myrecord.getValue({
 				fieldId: 'custrecord_ew_site_eff_fixchrg'
 			});
 			var fromdate = objInvoice.getValue('startdate');
-            fixedchrg = parseFloat(fixedchrg);
+			fixedchrg = parseFloat(fixedchrg);
 			var month = fromdate.getMonth();
 			month++;
 			month = parseInt(month);
@@ -631,20 +631,20 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					operator: search.Operator.IS,
 					values: site
 				},{
-				 	name: 'custrecord_ew_effusechrg_month',
-				 	operator: search.Operator.IS,
-				 	values: month
-				 }] // end of filter*/
+					name: 'custrecord_ew_effusechrg_month',
+					operator: search.Operator.IS,
+					values: month
+				}] // end of filter*/
 			});
 			montUsageChrg.run().each(function(result){
 				usagechrg = result.getValue('custrecord_ew_effusechrg_val')
 				return false;
 			});
-            usagechrg = parseFloat(usagechrg);
-            var fixeddieselprice = getDieselprice(myrecord,objInvoice,month);
+			usagechrg = parseFloat(usagechrg);
+			var fixeddieselprice = getDieselprice(myrecord,objInvoice,month);
 			fixeddieselprice = parseFloat(fixeddieselprice);
-            var areachrg = fixedchrg + (usagechrg * fixeddieselprice);
-            return areachrg;
+			var areachrg = fixedchrg + (usagechrg * fixeddieselprice);
+			return areachrg;
 		} //eof efficencyInvoice
 
 		function compareReading(startReading,endReading,site_name){
@@ -726,27 +726,27 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					value: l_startdate,
 					type: format.Type.DATE});
 
-			searchdiesel.run().each(function(searchresult){
+				searchdiesel.run().each(function(searchresult){
 
-				var h_from = format.parse({
-					value: searchresult.getValue({name: 'custrecord_ew_diesel_from'}),
-					type: format.Type.DATE});
-				var h_to = format.parse({
-					value: searchresult.getValue({name: 'custrecord_ew_diesel_to'}),
-					type: format.Type.DATE});
-				if(h_startdate >=  h_from && h_startdate < h_to){
-					fixeddieselprice = searchresult.getValue('custrecord_ew_diesel_price');
-					return false;
-				}
-				return true;
-			});
+					var h_from = format.parse({
+						value: searchresult.getValue({name: 'custrecord_ew_diesel_from'}),
+						type: format.Type.DATE});
+					var h_to = format.parse({
+						value: searchresult.getValue({name: 'custrecord_ew_diesel_to'}),
+						type: format.Type.DATE});
+					if(h_startdate >=  h_from && h_startdate < h_to){
+						fixeddieselprice = searchresult.getValue('custrecord_ew_diesel_price');
+						return false;
+					}
+					return true;
+				});
 			}
 			if(fixedRate == false) {
 				fixeddieselprice = (fixeddieselprice * 100) / 105; // Net Official Diesel price
 			}
 			fixeddieselprice = fixeddieselprice.toFixed(2);
 			fixeddieselprice = parseFloat(fixeddieselprice);
-		//	fixeddieselprice = Math.round(fixeddieselprice,2);
+			//	fixeddieselprice = Math.round(fixeddieselprice,2);
 			if (discount != null && discount != 0 && discount != ''){
 				if(discounttype == 2){
 					fixeddieselprice = fixeddieselprice - discount;
@@ -854,10 +854,10 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 		}// eof isLastDay
 
 		function createServiceInvoice(myrecord){
-				var custform = '112'; // EPC Invoice template
-				var customer = myrecord.getValue({
-					fieldId: 'custrecord_customername'
-				});
+			var custform = '112'; // EPC Invoice template
+			var customer = myrecord.getValue({
+				fieldId: 'custrecord_customername'
+			});
 			var fromdate = myrecord.getValue({
 				fieldId: 'custrecord_ew_site_lastinvdate'
 			});
@@ -865,15 +865,15 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				value: fromdate,
 				type: format.Type.DATE
 			});
-				var project = myrecord.getValue({
-					fieldId: 'custrecord_ew_site_project'
-				});
-				var l_class = myrecord.getValue({
-					fieldId: 'custrecord_ew_accounting_class_site'
-				});
-				var terms = myrecord.getValue({
-					fieldId: 'custrecord_ew_site_term'
-				});
+			var project = myrecord.getValue({
+				fieldId: 'custrecord_ew_site_project'
+			});
+			var l_class = myrecord.getValue({
+				fieldId: 'custrecord_ew_accounting_class_site'
+			});
+			var terms = myrecord.getValue({
+				fieldId: 'custrecord_ew_site_term'
+			});
 
 			var CustRecord = record.load({
 				type: record.Type.CUSTOMER,
@@ -972,9 +972,9 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 
 				objInvoice2.commitLine('item');
 			} // end of for loop
-		var RecId = objInvoice2.save({
-			ignoreMandatoryFields: true
-		});
+			var RecId = objInvoice2.save({
+				ignoreMandatoryFields: true
+			});
 
 		}// eof createCabelInvoice
 

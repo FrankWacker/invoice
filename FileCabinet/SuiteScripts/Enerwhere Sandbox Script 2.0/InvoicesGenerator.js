@@ -17,39 +17,35 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
 
         function getFixedDieselPrice(fileName, startDate) {
             //##### Search for file #####
-            var fileID;
+            try {
 
-            var fileSearch = search.create({
-                type: "file"
-            });
-            var filters = [];
+                var date = getMonthAndYear(startDate);
 
-            filters.push(["name","haskeywords",fileName]);
+                var myQuery = query.create({
+                    type: 'customrecord_ew_fixeddiesel'
+                });
 
-            fileSearch.filterExpression = filters;
+                var firstCondition = myQuery.createCondition({
+                    fieldId: 'custrecord_ew_fixeddiesel_month',
+                    operator: query.Operator.IS,
+                    values: date
+                });
+                var secondCondition = myQuery.createCondition({
+                    fieldId: 'custrecord_ew_fixeddiesel_site',
+                    operator: query.Operator.ANY_OF,
+                    values: fileName
+                });
+                myQuery.condition = myQuery.and(firstCondition, secondCondition);
 
-            fileSearch.run().each(function (result) {
-                fileID = result.id;
-                return true;
-            });
-
-            if(fileID == null || fileID == undefined){
-                sendErrorMessage({code: "Missing Information", message: "No file found with name " + fileName});
-            }
-
-
-            //##### Get diesel price from file #####
-            const fileObject = file.load({id: fileID});
-            var fileContent = fileObject.getContents();
-            var date = getMonthAndYear(startDate);
-            fileContent = fileContent.split("\r\n");
-
-
-            for(var i = 0; i < fileContent.length; i++)
-            {
-                fileContent[i] = fileContent[i].split(";");
-                if(fileContent[i][0] == date){return parseFloat(fileContent[i][1])}
-            }
+                myQuery.columns = [
+                    myQuery.createColumn(({
+                        fieldId: 'custrecord_ew_fixeddiesel_rate'
+                    }))
+                ];
+                var resultSet = myQuery.run();
+            } // end try
+            var rs = resultSet.results;
+            return rs[0].values;
 
             sendErrorMessage({code: "Missing Information", message: "No diesel price data found in file for " + date});
         }

@@ -80,7 +80,7 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
                         type: 'customrecord_ew_site_form',
                         id: l_site[0]
                     });
-                    const fileName = rs_site.getValue("name");
+                    var fileName = rs_site.id;
                     var fixedRate = rs_site.getValue('custrecord_ew_site_fxdrate');
                     var fixeddieselprice = rs_site.getValue('custrecord_ew_site_fixeddieselp');
                     var equirate = rs_site.getValue('custrecord_ew_site_equirate');
@@ -100,12 +100,19 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
                     var MinOT = rs_site.getValue('custrecord_ew_site_minimum')
                     var ttl_consumption = currentRecord.getCurrentSublistValue('item', 'custcol_ew_curr_rdg_item') - currentRecord.getCurrentSublistValue('item', 'custcol_ew_prv_rdg_item');
                     var l_rate = 0.1
-                    var searchdiesel = findDieselPrice(l_startdate, l_enddate);
 
+                    var fr1 = rs_site.getValue('custrecord_ew_site_fuelcustomer');
+                    var fr2 = rs_site.getValue('custrecord_ew_site_fuel_negotated');
+                    debugger;
+                    if(fr1 == true || fr2 == true){
+                        fixedRate = true
+                    }
 
                     if(fixedRate == false){
                         debugger;
-                       var fixeddieselprice = searchdiesel[0];
+                        var searchdiesel = findDieselPrice(l_startdate, l_enddate);
+
+                        var fixeddieselprice = searchdiesel[0];
 
                         fixeddieselprice = (fixeddieselprice * 100)/105; // Net Official Diesel price
                         fixeddieselprice = fixeddieselprice.toFixed(2);
@@ -213,6 +220,7 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
         } //eof findDieselPrice
 
         function getFixedDieselPrice(fileName, startDate) {
+            debugger;
             //##### Search for file #####
             var date = getMonthAndYear(startDate);
 
@@ -239,7 +247,7 @@ define(['N/currency', 'N/email', 'N/error', 'N/format', 'N/record', 'N/runtime',
             ];
             var resultSet = myQuery.run();
             var rs = resultSet.results;
-            return rs;
+            return rs[0].values[0];
         }
         function getMonthAndYear(date) {
             switch(date.getMonth()){

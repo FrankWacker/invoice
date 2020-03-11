@@ -17,37 +17,38 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
 
         function getFixedDieselPrice(fileName, startDate) {
             //##### Search for file #####
-            try {
+           try {
+               var date = getMonthAndYear(startDate);
 
-                var date = getMonthAndYear(startDate);
+               var myQuery = query.create({
+                   type: 'customrecord_ew_fixeddiesel'
+               });
 
-                var myQuery = query.create({
-                    type: 'customrecord_ew_fixeddiesel'
-                });
+               var firstCondition = myQuery.createCondition({
+                   fieldId: 'custrecord_ew_fixeddiesel_month',
+                   operator: query.Operator.IS,
+                   values: date
+               });
+               var secondCondition = myQuery.createCondition({
+                   fieldId: 'custrecord_ew_fixeddiesel_site',
+                   operator: query.Operator.ANY_OF,
+                   values: fileName
+               });
+               myQuery.condition = myQuery.and(firstCondition,secondCondition);
 
-                var firstCondition = myQuery.createCondition({
-                    fieldId: 'custrecord_ew_fixeddiesel_month',
-                    operator: query.Operator.IS,
-                    values: date
-                });
-                var secondCondition = myQuery.createCondition({
-                    fieldId: 'custrecord_ew_fixeddiesel_site',
-                    operator: query.Operator.ANY_OF,
-                    values: fileName
-                });
-                myQuery.condition = myQuery.and(firstCondition, secondCondition);
-
-                myQuery.columns = [
-                    myQuery.createColumn(({
-                        fieldId: 'custrecord_ew_fixeddiesel_rate'
-                    }))
-                ];
-                var resultSet = myQuery.run();
-            } // end try
+               myQuery.columns =[
+                   myQuery.createColumn(({
+                       fieldId: 'custrecord_ew_fixeddiesel_rate'
+                   }))
+               ];
+               var resultSet = myQuery.run();
+           }  catch (e) {
+               sendErrorMessage({code: "Missing Information", message: "No diesel price data found in file for " + date});
+           }// end try
             var rs = resultSet.results;
-            return rs[0].values;
+            return rs[0].values[0];
 
-            sendErrorMessage({code: "Missing Information", message: "No diesel price data found in file for " + date});
+
         }
 
         function beforeSubmit(scriptContext) {
@@ -108,7 +109,7 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
 
                 const siteID = invoiceRecord.getValue("custbody_ew_inv_site");
                 const siteRecord = record.load({type: "customrecord_ew_site_form", id: siteID[0]});
-                const fileName = siteRecord.getValue("name");
+                const fileName = siteRecord.id;
                 var minOT, min_tmp; //Minimum Off Take
                 var slab2from, slab3from;
                 var slab1to, slab2to, slab3to;

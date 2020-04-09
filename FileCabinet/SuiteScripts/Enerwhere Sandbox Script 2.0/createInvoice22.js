@@ -3,7 +3,7 @@
  * @NScriptType UserEventScript
  * @NModuleScope SameAccount
  */
-define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N/format','N/file'],
+define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N/format','N/query'],
 	/**
 	 * @param {email} email
 	 * @param {error} error
@@ -31,7 +31,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 		var todate = new Date();
 		todate.setTime(todate.getTime() + dateOffset);
 		todate.setHours(0,0,0,0);
-		todate.setDate(todate.getDate() - 1);
+		todate.setDate(todate.getDate() -1);
 		var fuelByCustomer, fuelPreNeg;
 
 
@@ -118,6 +118,14 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				var myrecord = myrecord;
 				var startReading = startReading;
 				var endReading = endReading;
+				var site_dispaly = myrecord.getValue({
+					fieldId: 'custrecord_ew_sitedisplayname'
+				});
+				if (site_dispaly =='' || site_dispaly == undefined){
+					site_dispaly = myrecord.getValue({
+						fieldId:'name'
+					});
+				}
 				var custform = myrecord.getValue({
 					fieldId: 'custrecord_ew_site_invtmpl'
 				}); // KWH Invoice template
@@ -237,6 +245,11 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					value: myrecord.id
 				});
 				objInvoice.setValue({
+					fieldId: 'custbody_ew_site_display',
+					value: site_dispaly
+				});
+
+				objInvoice.setValue({
 					fieldId: 'job',
 					value: project
 				});
@@ -305,11 +318,16 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 							return 1;
 						return 0; //default return value (no sorting)
 					});
+					var cranelimit = myrecord.getValue({
+						fieldId: 'custrecord_ew_site_craneslab'
+					});
 				} // endif sort for cranes
 
                 // loop for line items
+				var m2 = 0;
 				for (var m = 0; m < ar_mtrdata.length; m++) {
 					if(custform == '125' && ar_mtrdata[m][4] != 'Revenue Meter'){
+						m2--;
 						continue;
 					}
 					itemname = '417';
@@ -319,7 +337,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
                         itemname = '3775';
 						objInvoice.setCurrentSublistValue('item', 'item', itemname);
 						objInvoice.setCurrentSublistValue('item', 'custcol_ew_item_filter', itemname);
-                        var workingdays = getCraneDetail(ar_mtrdata[m][0],fromDate,todate);
+                        var workingdays = getCraneDetail(ar_mtrdata[m][0],fromDate,todate,cranelimit);
 						objInvoice.setCurrentSublistValue('item', 'quantity', workingdays.toString());
 				//		objInvoice.setCurrentSublistValue('item', 'units', '15');
 						var rate = getCraneRate(myrecord, objInvoice,m);
@@ -347,8 +365,10 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					objInvoice.setCurrentSublistValue('item', 'custcol_ew_jrn_proj', project);
 
 					objInvoice.commitLine('item');
+					m2++;
 					//validate the new line
-						validateLine(objInvoice, myrecord, m);
+						validateLine(objInvoice, myrecord, m2);
+
 					} // end of loop array meter details
 
                 // cooling Invoice form
@@ -429,11 +449,12 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				}, {
 					name: 'custitem_ew_item_location'
 				}],
-				filters:[{
-					name: 'itemid',
-					operator: 'is',
-					values: meternumber
-				}]
+				filters:
+					[
+						["name","is",meternumber],
+						"AND",
+						["isinactive","is","F"]
+					]
 			});
 			var result = mtrsearch.run().getRange({
 				start: 0,
@@ -464,9 +485,13 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 			var myrecord = myrecord;
 			var m = m;
 			// only for Elecricity
-			var lineitem = objInvoice.getSublistValue('item', 'item', m);
+			var lineitem = objInvoice.getSublistValue({
+				sublistId: 'item',
+				fieldId: 'item',
+				line: m
+			});
 			if(lineitem != '417'){
-				return;
+				return true;
 			}
 			// Invoice automation per Line Item
 			 var lineNum = objInvoice.selectLine({
@@ -499,7 +524,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 			var ttl_consumption = parseFloat(cur_read) - parseFloat(prev_read);
 			var l_rate = 0.1;
 
-			if (custform == 109 || custform == 118 || custform == 120){
+			if (custform == 109 || custform == 118 || custform == 120 || custform == 125){
 				var l_enddate = objInvoice.getValue({
 					fieldId: 'enddate'});
 				var l_site = objInvoice.getValue({fieldId: 'name'});
@@ -545,8 +570,9 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 			objInvoice.commitLine({sublistId: 'item'});
 		} // EOF validateLine
 
-		function getCraneDetail(mtrnumber,fromDate,todate){
+		function getCraneDetail(mtrnumber,fromDate,todate, cranelimit){
 			var workingdays = 0;
+			var limit = parseFloat(cranelimit);
 			var f_fromdate = format.format({
 				value: fromDate,
 				type: format.Type.DATE
@@ -584,9 +610,12 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 					]
 			});
 			var searchResultCount = wdSearch.runPaged().count;
-
+			var y_value =0;
 			wdSearch.run().each(function(result){
-				workingdays++;
+				if(parseFloat(result.getValue('custrecord_ew_meterreading_value'))+ limit > parseFloat(y_value) ) {
+					workingdays++;
+				}
+				y_value = result.getValue('custrecord_ew_meterreading_value');
 				return true;
 			});
 
@@ -621,20 +650,17 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 			month++;
 			month = parseInt(month);
 			month = month.toString();
-			var site = myrecord.getValue('name');
+			var site = myrecord.id;
 			var usagechrg = 0;
 			var montUsageChrg = search.create({
 				type: 'customrecord_ew_rec_effusgchrg',
 				columns: ['custrecord_ew_effrec_site','custrecord_ew_effusechrg_month','custrecord_ew_effusechrg_val'],
-				filters: [{
-					name: 'custrecord_ew_effrec_site',
-					operator: search.Operator.IS,
-					values: site
-				},{
-				 	name: 'custrecord_ew_effusechrg_month',
-				 	operator: search.Operator.IS,
-				 	values: month
-				 }] // end of filter*/
+				filters:
+					[
+						["custrecord_ew_effrec_site","anyof",site],
+						"AND",
+						["custrecord_ew_effusechrg_month","equalto",month]
+					] // end of filter*/
 			});
 			montUsageChrg.run().each(function(result){
 				usagechrg = result.getValue('custrecord_ew_effusechrg_val')
@@ -789,7 +815,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				];
 				var resultSet = myQuery.run();
 			}  catch (e) {
-				sendErrorMessage({code: "Missing Information", message: "No diesel price data found in file for " + date});
+				sendErrorMessage({code: "Missing Information", message: "No diesel price data found  for " + fileName + " " + date});
 			}// end try
 			var rs = resultSet.results;
 			return rs[0].values[0];

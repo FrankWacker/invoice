@@ -70,6 +70,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 			var chkReading = compareReading(startReadings,endReadings,site_name);
 			if (chkReading == false){
 				// TODO: Error handling global
+				return false;
 			}
 			fromdate.setDate(fromdate.getDate() + 1);
 			createInvoice(myrecord, startReadings, endReadings);
@@ -95,7 +96,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 			});
 			var reading = search.create({
 				type: 'customrecord_ew_meterreading_form',
-				columns: ['name','id','custrecord_ew_mr_metername','custrecordmeternumber','custrecord_ew_mr_site','custrecord1','custrecord_ew_meterreading_value'],
+				columns: ['name','id','custrecord_ew_mr_metername','custrecordmeternumber','custrecord_ew_mr_site','custrecord1','custrecord_ew_meterreading_value','custrecord_ew_meterreading_inv_flag'],
 				filters: [{
 					name: 'custrecord_ew_mr_site',
 					operator: search.Operator.IS,
@@ -107,7 +108,10 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				}] // end of filter*/
 			});
 			reading.run().each(function(result){
-				ar_reading.push(result);
+				if(result[2].includes("Rev")){
+					ar_reading.push(result);
+				}
+
 				return true;
 			});
 			return ar_reading;
@@ -123,7 +127,7 @@ define(['N/email', 'N/error', 'N/https', 'N/record', 'N/runtime', 'N/search', 'N
 				}); // KWH Invoice template
 				// Jumeirah Gates needs another form #118
 				if (custform == '' || custform == null) {
-					custform = '109';
+					custform = '139';
 				}
 				var ewbank = myrecord.getValue({
 					fieldId: 'custrecord_ew_site_bankacc'

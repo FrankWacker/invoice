@@ -141,7 +141,7 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
                 filterExpression.push("AND");
                 filterExpression.push(["name", "is", getMonthAndYear(startDate)]);
                 dieselSearch.filterExpression = filterExpression;
-
+                var display = siteRecord.getValue("custrecord_ew_sitedisplayname");
                 slab1to = parseFloat(siteRecord.getValue("custrecord_ew_site_slab1_to"));
                 slab1rate = parseFloat(siteRecord.getValue("custrecord_ew_site_slab1_rate"));
 
@@ -284,6 +284,7 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
                     linesCount++;
 
                     invoiceRecord.setValue("custbody_ew_minofftakeauto", false);
+                    invoiceRecord.setValue("custbody_ew_site_display", display);
                     invoiceRecord.setValue("custbody_ew_ttl_consump", minOT);
                     invoiceRecord.setValue("custbody_ew_inv_consumslab1", minOT);
                     ttlprice_s1 = parseFloat(minOT) * parseFloat(rate);
@@ -496,14 +497,22 @@ define(['N/record', 'N/runtime', 'N/ui/dialog', 'N/ui/message', 'N/error', 'N/se
 
                     var lines_tmp = linesCount; //delete
                     linesCount = linesCount - linesCount_tmp;
-
+                    var subtotal_tmp = 0;
+                    var rate3 = 0;
                     if(linesCount != 1){
-                        var subtotal_tmp = invoiceRecord.getValue("subtotal")
+                        subtotal_tmp = invoiceRecord.getValue("subtotal")
+                    } else if(parseFloat(invoiceRecord.getSublistValue('item', 'quantity', 0)) > parseFloat(slab1to)){
+                      var rate3_tmp = parseFloat(invoiceRecord.getSublistValue('item', 'quantity', 0)) - parseFloat(slab1to);
+                        subtotal_tmp = rate3_tmp * (rate - rate2);
+                        if(subtotal_tmp > 0){subtotal_tmp = subtotal_tmp * -1}
+                                            }
+                    else {
+                        var subtotal_tmp = 0;
                     }
 
                     subtotal_tmp = parseFloat(subtotal_tmp);
                     if (linesCount == 1){
-                        var rate3 =  subtotal_tmp;
+                         rate3 =  subtotal_tmp;
                     } else {
                         rate3 = subtotal - subtotal_tmp;
                     }
